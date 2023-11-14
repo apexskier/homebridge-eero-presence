@@ -32,7 +32,7 @@ export class PrusalinkHomebridgePlatform implements DynamicPlatformPlugin {
   constructor(
     public readonly log: Logger,
     public readonly config: PlatformConfig,
-    public readonly api: API
+    public readonly api: API,
   ) {
     this.log.debug("Finished initializing platform:", this.config);
 
@@ -66,7 +66,7 @@ export class PrusalinkHomebridgePlatform implements DynamicPlatformPlugin {
    * It should be used to setup event handlers for characteristics and update respective values.
    */
   configureAccessory(
-    accessory: PlatformAccessory<{ config: Config; info: Info }>
+    accessory: PlatformAccessory<{ config: Config; info: Info }>,
   ) {
     this.log.info("Loading accessory from cache:", accessory.displayName);
 
@@ -79,24 +79,24 @@ export class PrusalinkHomebridgePlatform implements DynamicPlatformPlugin {
 
     const response = await fetch(
       new URL("/api/v1/info", `http://${config.ip}`).toString(),
-      { headers: { "X-Api-Key": config.password } }
+      { headers: { "X-Api-Key": config.password } },
     );
 
     if (!response.ok) {
       throw new this.api.hap.HapStatusError(
-        this.api.hap.HAPStatus.SERVICE_COMMUNICATION_FAILURE
+        this.api.hap.HAPStatus.SERVICE_COMMUNICATION_FAILURE,
       );
     }
 
     if (response.status === 401) {
       throw new this.api.hap.HapStatusError(
-        this.api.hap.HAPStatus.INSUFFICIENT_AUTHORIZATION
+        this.api.hap.HAPStatus.INSUFFICIENT_AUTHORIZATION,
       );
     }
 
     if (response.status !== 200) {
       throw new this.api.hap.HapStatusError(
-        this.api.hap.HAPStatus.SERVICE_COMMUNICATION_FAILURE
+        this.api.hap.HAPStatus.SERVICE_COMMUNICATION_FAILURE,
       );
     }
 
@@ -112,7 +112,7 @@ export class PrusalinkHomebridgePlatform implements DynamicPlatformPlugin {
     // see if an accessory with the same uuid has already been registered and restored from
     // the cached devices we stored in the `configureAccessory` method above
     let existingAccessory = this.accessories.find(
-      (accessory) => accessory.UUID === uuid
+      (accessory) => accessory.UUID === uuid,
     );
     if (
       existingAccessory &&
@@ -130,7 +130,7 @@ export class PrusalinkHomebridgePlatform implements DynamicPlatformPlugin {
       this.log.info(
         "Restoring existing accessory from cache:",
         existingAccessory.displayName,
-        existingAccessory.context.info.serial
+        existingAccessory.context.info.serial,
       );
 
       existingAccessory.context.info = info;
@@ -144,7 +144,7 @@ export class PrusalinkHomebridgePlatform implements DynamicPlatformPlugin {
       // create a new accessory
       const accessory = new this.api.platformAccessory(
         config.model || info.name || info.hostname || "PrusaLink",
-        uuid
+        uuid,
       ) as PlatformAccessory<{ config: Config; info: Info }>;
       accessory.context.info = info;
       accessory.context.config = config;
