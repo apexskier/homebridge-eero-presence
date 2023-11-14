@@ -36,7 +36,7 @@ export class PrusalinkHomebridgePlatform implements DynamicPlatformPlugin {
   ) {
     this.log.debug("Finished initializing platform:", this.config);
 
-    const userConfig = this.config.platform as unknown as Config;
+    const userConfig = this.config as unknown as Config;
     if (!userConfig.ip) {
       this.log.error("No IP address configured");
       return;

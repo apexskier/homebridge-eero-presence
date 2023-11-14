@@ -45,7 +45,7 @@ export class PrusalinkPlatformAccessory {
     this.tempService
       .getCharacteristic(this.platform.Characteristic.CurrentTemperature)
       .onGet(async () => {
-        this.platform.log.debug("Fetching nozzle temp");
+        this.platform.log.debug("Fetching status");
         const response = await fetch(
           new URL(
             "/api/v1/status",
@@ -80,21 +80,27 @@ export class PrusalinkPlatformAccessory {
           );
         }
 
-        if (status.printer.target_nozzle || status.printer.target_bed) {
+        const active =
+          // inactive if attempting to reach a specific temp (preheating or actively printing)
+          !(status.printer.target_bed || status.printer.target_nozzle) &&
+          // inactive if "cooling down" (temps are way different than each other)
+          Math.abs(status.printer.temp_nozzle - status.printer.temp_bed) <
+            this.accessory.context.config.maxDelta;
+        this.tempService
+          .getCharacteristic(this.platform.Characteristic.StatusActive)
+          .setValue(active);
+        this.tempService
+          .getCharacteristic(this.platform.Characteristic.StatusTampered)
+          .setValue(
+            active
+              ? this.platform.Characteristic.StatusTampered.NOT_TAMPERED
+              : this.platform.Characteristic.StatusTampered.TAMPERED,
+          );
+        if (!active) {
           throw new this.platform.api.hap.HapStatusError(
             this.platform.api.hap.HAPStatus.RESOURCE_BUSY,
           );
         }
-
-        this.tempService
-          .getCharacteristic(this.platform.Characteristic.StatusActive)
-          .setValue(
-            // inactive if attempting to reach a specific temp (preheating or actively printing)
-            !(status.printer.target_bed || status.printer.target_nozzle) &&
-              // inactive if "cooling down" (temps are way different than each other)
-              Math.abs(status.printer.temp_nozzle - status.printer.temp_bed) <
-                this.accessory.context.config.maxDelta,
-          );
 
         // use average temp as the actual value, it's kind of annoying to deal with two sensors
         return (status.printer.temp_nozzle + status.printer.temp_bed) / 2;
