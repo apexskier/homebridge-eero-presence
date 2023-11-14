@@ -1,8 +1,6 @@
-import { Config } from './config';
-
 export class StatusPrinterStatusPrinter {
-  'ok'?: boolean;
-  'message'?: string;
+  "ok"?: boolean;
+  "message"?: string;
 }
 
 /**
@@ -10,96 +8,50 @@ export class StatusPrinterStatusPrinter {
  */
 export interface StatusPrinter {
   state: StatusPrinterStateEnum;
-  tempNozzle?: number;
-  targetNozzle?: number;
-  tempBed?: number;
-  targetBed?: number;
+  temp_nozzle?: number;
+  target_nozzle?: number;
+  temp_bed?: number;
+  target_bed?: number;
   /**
    * Available only when printer is not moving
    */
-  axisX?: number;
+  axis_x?: number;
   /**
    * Available only when printer is not moving
    */
-  axisY?: number;
-  axisZ?: number;
+  axis_y?: number;
+  axis_z?: number;
   flow?: number;
   speed?: number;
-  fanHotend?: number;
-  fanPrint?: number;
-  statusPrinter?: StatusPrinterStatusPrinter;
-  statusConnect?: StatusPrinterStatusPrinter;
+  fan_hotend?: number;
+  fan_print?: number;
+  status_printer?: StatusPrinterStatusPrinter;
+  status_connect?: StatusPrinterStatusPrinter;
 }
 
 export enum StatusPrinterStateEnum {
-  Idle = 'IDLE',
-  Busy = 'BUSY',
-  Printing = 'PRINTING',
-  Paused = 'PAUSED',
-  Finished = 'FINISHED',
-  Stopped = 'STOPPED',
-  Error = 'ERROR',
-  Atttention = 'ATTTENTION',
-  Ready = 'READY',
+  Idle = "IDLE",
+  Busy = "BUSY",
+  Printing = "PRINTING",
+  Paused = "PAUSED",
+  Finished = "FINISHED",
+  Stopped = "STOPPED",
+  Error = "ERROR",
+  Atttention = "ATTTENTION",
+  Ready = "READY",
 }
 
-export class Info {
-  'mmu'?: boolean;
-  'name'?: string;
-  'location'?: string;
-  'farmMode'?: boolean;
-  'nozzleDiameter'?: number;
-  'minExtrusionTemp'?: number;
-  'serial'?: string;
-  'sdReady'?: boolean;
-  'activeCamera'?: boolean;
-  'hostname'?: string;
-  'port'?: string;
-  'networkErrorChime'?: boolean;
-}
-
-export async function getInfo(config: Config) {
-  const { DigestClient } = await import('digest-fetch');
-  const client = new DigestClient(config.username, config.password, {
-    basic: true,
-  });
-
-  const response = await client.fetch(
-    new URL('/api/v1/info', `http://${config.ip}`).toString(),
-  );
-  if (!response.ok) {
-    throw new Error('Error fetching /api/v1/info');
-  }
-
-  if (response.status === 401) {
-    throw new Error('unauthorized');
-  }
-
-  if (response.status !== 200) {
-    throw new Error(`Unexpected status code ${response.status}`);
-  }
-
-  return (await response.json()) as Info;
-}
-
-export async function getStatus(config: Config) {
-  const { DigestClient } = await import('digest-fetch');
-  const client = new DigestClient(config.username, config.password, {
-    basic: true,
-  });
-
-  const response = await client.fetch(
-    new URL('/api/v1/status', `http://${config.ip}`).toString(),
-  );
-  if (!response.ok) {
-    throw new Error('Error fetching /api/v1/status');
-  }
-
-  if (response.status !== 200) {
-    throw new Error(`Unexpected status code ${response.status}`);
-  }
-
-  return (await response.json()) as {
-    printer: StatusPrinter;
-  };
+export interface Info {
+  mmu?: boolean;
+  name?: string;
+  location?: string;
+  farm_mode?: boolean;
+  nozzle_diameter?: number;
+  min_extrusion_temp?: number;
+  serial?: string;
+  sd_ready?: boolean;
+  active_camera?: boolean;
+  hostname?: string;
+  port?: string;
+  network_error_chime?: boolean;
 }

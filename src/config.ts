@@ -1,5 +1,6 @@
 export interface Config {
   ip: string;
-  username: string;
+  model: string;
   password: string;
+  maxDelta: number;
 }

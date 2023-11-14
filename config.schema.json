@@ -10,15 +10,22 @@
         "format": "hostname",
         "required": true
       },
-      "username": {
-        "title": "Username",
+      "model": {
+        "title": "Model",
         "type": "string",
+        "default": "Prusa MK4",
         "required": true
       },
       "password": {
         "title": "Password",
         "type": "string",
         "required": true
+      },
+      "maxDelta": {
+        "title": "Max Temperature Difference",
+        "type": "number",
+        "default": 2,
+        "description": "Maximum temperature difference to consider active. Lower this if the sensor is active too soon after a print completes, and increase if the sensor is not active enough."
       }
     }
   }

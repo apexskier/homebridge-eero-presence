@@ -1,11 +1,8 @@
 {
   "compilerOptions": {
-    "target": "ES2022",
+    "target": "ES2018",
     "module": "commonjs",
-    "lib": [
-      "ESNext",
-      "DOM"
-    ],
+    "lib": ["ESNext", "DOM"],
     "skipLibCheck": true,
     "declaration": true,
     "declarationMap": true,
@@ -16,10 +13,6 @@
     "esModuleInterop": true,
     "noImplicitAny": false
   },
-  "include": [
-    "src/"
-  ],
-  "exclude": [
-    "**/*.spec.ts"
-  ]
+  "include": ["src/"],
+  "exclude": ["**/*.spec.ts"]
 }
