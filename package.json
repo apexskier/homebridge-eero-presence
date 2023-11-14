@@ -1,16 +1,15 @@
 {
-  "private": true,
-  "displayName": "Plugin Name",
-  "name": "homebridge-plugin-name",
+  "displayName": "PrusaLink",
+  "name": "@apexskier/homebridge-prusalink",
   "version": "1.0.0",
   "description": "A short description about what your plugin does.",
   "license": "Apache-2.0",
   "repository": {
     "type": "git",
-    "url": "https://github.com/USERNAME/GITHUB_PROJECT_NAME.git"
+    "url": "https://github.com/apexskier/homebridge-prusalink.git"
   },
   "bugs": {
-    "url": "https://github.com/USERNAME/GITHUB_PROJECT_NAME/issues"
+    "url": "https://github.com/apexskier/homebridge-prusalink/issues"
   },
   "engines": {
     "node": "^18.17.0 || ^20.9.0",
@@ -21,14 +20,16 @@
     "lint": "eslint src/**.ts --max-warnings=0",
     "watch": "npm run build && npm link && nodemon",
     "build": "rimraf ./dist && tsc",
-    "prepublishOnly": "npm run lint && npm run build"
+    "prepublishOnly": "npm run lint && npm run build",
+    "generateApi": "openapi-generator-cli generate -i https://github.com/prusa3d/Prusa-Link-Web/blob/377e1509542100efe1689415d603d7a330d28d3c/spec/openapi.yaml -g typescript"
   },
   "keywords": [
     "homebridge-plugin"
   ],
-  "dependencies": {},
   "devDependencies": {
+    "@openapitools/openapi-generator-cli": "^2.7.0",
     "@types/node": "^18.16.20",
+    "@types/whatwg-fetch": "^0.0.33",
     "@typescript-eslint/eslint-plugin": "^5.62.0",
     "@typescript-eslint/parser": "^5.62.0",
     "eslint": "^8.45.0",
@@ -37,5 +38,8 @@
     "rimraf": "^3.0.2",
     "ts-node": "^10.9.1",
     "typescript": "^4.9.5"
+  },
+  "dependencies": {
+    "digest-fetch": "^3.1.1"
   }
 }
