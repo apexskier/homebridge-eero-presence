@@ -21,7 +21,7 @@
     "fix": "prettier --write . && eslint src/**.ts --fix",
     "watch": "npm run build && npm link && nodemon",
     "build": "rimraf ./dist && tsc",
-    "prepare": "npm run lint && npm run build"
+    "prepublish": "npm run lint && npm run build"
   },
   "keywords": [
     "homebridge-plugin"
