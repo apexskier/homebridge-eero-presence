@@ -1,12 +1,12 @@
 {
   "displayName": "Eero Presence",
   "name": "@apexskier/homebridge-eero-presence",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "Use your Eero mesh as an occupancy sensor",
   "license": "Apache-2.0",
   "repository": {
     "type": "git",
-    "url": "https://github.com/apexskier/homebridge-eero-presence.git"
+    "url": "git+https://github.com/apexskier/homebridge-eero-presence.git"
   },
   "bugs": {
     "url": "https://github.com/apexskier/homebridge-eero-presence/issues"
@@ -21,7 +21,8 @@
     "fix": "prettier --write . && eslint src/**.ts --fix",
     "watch": "npm run build && npm link && nodemon",
     "build": "rimraf ./dist && tsc",
-    "prepublish": "npm run lint && npm run build"
+    "prepublish": "npm run lint && npm run build",
+    "auth": "node auth.js"
   },
   "keywords": [
     "homebridge-plugin"
