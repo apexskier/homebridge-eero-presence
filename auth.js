@@ -23,7 +23,7 @@ async function main() {
     },
     body: JSON.stringify({
       login: await read(
-        "login identifier (email or phone, amazon login not supported): "
+        "login identifier (email or phone, amazon login not supported): ",
       ),
     }),
   });

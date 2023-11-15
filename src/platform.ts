@@ -25,7 +25,6 @@ export class EeroPresenceHomebridgePlatform implements DynamicPlatformPlugin {
   public readonly Characteristic: typeof Characteristic =
     this.api.hap.Characteristic;
 
-  // this is used to track restored cached accessories
   public readonly accessories: PlatformAccessory<AccessoryContext>[] = [];
 
   constructor(
@@ -165,7 +164,9 @@ export class EeroPresenceHomebridgePlatform implements DynamicPlatformPlugin {
           device.connection_type === "wireless" &&
           device.connected,
       )
-      .filter(({ connectivity: { score } }) => score > 0.7);
+      .filter(
+        ({ connectivity: { score } }) => score > (this.config.minSignal || 0.7),
+      );
     const connectedEeros = new Set(
       connectedDevices.map(({ source: { serial_number } }) =>
         this.api.hap.uuid.generate(serial_number),

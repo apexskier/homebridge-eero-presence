@@ -6,7 +6,11 @@
 
 # Homebridge Eero Presense
 
-Use your Eero routers as occupancy sensors. Also exposes status LED through Homekit.
+Use your Eero routers as occupancy sensors. There's inherent delay for your devices to swap routers, but for general monitoring this works pretty well.
+
+I use this to automatically open my blinds when we leave the bedroom and go to our main space in the morning.
+
+## Config
 
 To get a user token, run `npm run auth` and follow the prompts:
 

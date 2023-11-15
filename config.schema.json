@@ -16,6 +16,15 @@
         "description": "Name of the network to monitor, only required if you have multiple associated with your account.",
         "required": false
       },
+      "minSignal": {
+        "title": "Signal Strength",
+        "type": "number",
+        "description": "Minimum signal strength (0 - 1) to be considered present.",
+        "minimum": 0,
+        "maximum": 1,
+        "default": 0.7,
+        "required": false
+      },
       "pollTime": {
         "title": "Poll Interval",
         "type": "number",

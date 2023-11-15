@@ -1,5 +1,6 @@
 export interface Config {
   userToken: string;
-  pollTime: number;
+  pollTime?: number;
   network?: string;
+  minSignal?: number;
 }
