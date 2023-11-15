@@ -4,6 +4,6 @@
 
 </p>
 
-# Homebridge Prusalink
+# Homebridge Eero Presense
 
-Use your Prusa 3D printer as a temperature sensor.
+Use your Eero routers as occupancy sensors. Also exposes status LED through Homekit.

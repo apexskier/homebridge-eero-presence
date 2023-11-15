@@ -1,109 +1,149 @@
 import { Service, PlatformAccessory } from "homebridge";
 
-import { PrusalinkHomebridgePlatform } from "./platform";
-import { Info, StatusPrinter } from "./api";
+import { EeroPresenceHomebridgePlatform } from "./platform";
 import { Config } from "./config";
 
-export class PrusalinkPlatformAccessory {
-  private tempService: Service;
+export interface AccessoryContext {
+  eero: {
+    location: string;
+    model: string;
+    serial: string;
+    url: string;
+    resources: {
+      led_action: string;
+    };
+  };
+  config: Config;
+}
+
+export class EeroPresensePlatformAccessory {
+  sensorService: Service;
+  lightService: Service;
 
   constructor(
-    private readonly platform: PrusalinkHomebridgePlatform,
-    private readonly accessory: PlatformAccessory<{
-      config: Config;
-      info: Info;
-    }>,
+    private readonly platform: EeroPresenceHomebridgePlatform,
+    private readonly accessory: PlatformAccessory<AccessoryContext>
   ) {
     // set accessory information
     const accessoryCharacteristics = this.accessory
       .getService(this.platform.Service.AccessoryInformation)!
+      .setCharacteristic(this.platform.Characteristic.Manufacturer, "Eero")
       .setCharacteristic(
-        this.platform.Characteristic.Manufacturer,
-        "Prusa Research",
-      )
-      .setCharacteristic(this.platform.Characteristic.Model, "Prusa MK4");
-    const serialNumber = (accessory.context.info as Info).serial;
-    if (serialNumber) {
-      accessoryCharacteristics.setCharacteristic(
-        this.platform.Characteristic.SerialNumber,
-        serialNumber,
+        this.platform.Characteristic.Model,
+        this.accessory.context.eero.model
+      );
+    accessoryCharacteristics.setCharacteristic(
+      this.platform.Characteristic.SerialNumber,
+      this.accessory.context.eero.serial
+    );
+
+    this.sensorService =
+      this.accessory.getService(this.platform.Service.OccupancySensor) ||
+      this.accessory.addService(this.platform.Service.OccupancySensor);
+
+    this.lightService =
+      this.accessory.getService(this.platform.Service.Lightbulb) ||
+      this.accessory.addService(this.platform.Service.Lightbulb);
+
+    this.lightService
+      .getCharacteristic(this.platform.Characteristic.Name)
+      .setValue("Status light");
+
+    this.lightService
+      .getCharacteristic(this.platform.Characteristic.On)
+      .onGet(async () => {
+        this.platform.log.debug("getting on", this.accessory.displayName);
+        const {
+          data: { led_on },
+        } = await (
+          await this.fetch(
+            `https://api-user.e2ro.com/${this.accessory.context.eero.url}`
+          )
+        ).json();
+
+        return led_on;
+      })
+      .onSet(async (value) => {
+        this.platform.log.debug(
+          "setting on",
+          value,
+          this.accessory.displayName
+        );
+        await this.fetch(
+          `https://api-user.e2ro.com${this.accessory.context.eero.resources.led_action}`,
+          {
+            method: "PUT",
+            body: JSON.stringify({
+              led_on: value,
+            }),
+          }
+        );
+      });
+
+    this.lightService
+      .getCharacteristic(this.platform.Characteristic.Brightness)
+      .onGet(async () => {
+        this.platform.log.debug(
+          "getting brightness",
+          this.accessory.displayName
+        );
+        const {
+          data: { led_brightness },
+        } = await (
+          await this.fetch(
+            `https://api-user.e2ro.com/${this.accessory.context.eero.url}`
+          )
+        ).json();
+
+        return led_brightness;
+      })
+      .onSet(async (value) => {
+        this.platform.log.debug(
+          "setting brightness",
+          value,
+          this.accessory.displayName
+        );
+        await this.fetch(
+          `https://api-user.e2ro.com${this.accessory.context.eero.resources.led_action}`,
+          {
+            method: "PUT",
+            body: JSON.stringify({
+              led_on: !!value,
+              led_brightness: value,
+            }),
+          }
+        );
+      });
+  }
+
+  async fetch(input: RequestInfo | URL, init?: RequestInit) {
+    const response = await fetch(input, {
+      ...init,
+      headers: {
+        ...init?.headers,
+        "content-type": "application/json",
+        cookie: `s=${this.accessory.context.config.userToken}`,
+      },
+    });
+
+    if (!response.ok) {
+      throw new this.platform.api.hap.HapStatusError(
+        this.platform.api.hap.HAPStatus.SERVICE_COMMUNICATION_FAILURE
       );
     }
 
-    // you can create multiple services for each accessory
-    this.tempService =
-      this.accessory.getService(this.platform.Service.TemperatureSensor) ||
-      this.accessory.addService(this.platform.Service.TemperatureSensor);
+    if (response.status === 401) {
+      throw new this.platform.api.hap.HapStatusError(
+        this.platform.api.hap.HAPStatus.INSUFFICIENT_AUTHORIZATION
+      );
+    }
 
-    // set the service name, this is what is displayed as the default name on the Home app
-    // in this example we are using the name we stored in the `accessory.context` in the `discoverDevices` method.
-    this.tempService.setCharacteristic(
-      this.platform.Characteristic.Name,
-      "Temperature Sensor",
-    );
-    // this.nozzleTempService.getCharacteristic(this.platform.Characteristic.StatusActive, false);
-    this.tempService
-      .getCharacteristic(this.platform.Characteristic.CurrentTemperature)
-      .onGet(async () => {
-        this.platform.log.debug("Fetching status");
-        const response = await fetch(
-          new URL(
-            "/api/v1/status",
-            `http://${this.accessory.context.config.ip}`,
-          ).toString(),
-          { headers: { "X-Api-Key": this.accessory.context.config.password } },
-        );
+    if (response.status !== 200) {
+      throw new this.platform.api.hap.HapStatusError(
+        this.platform.api.hap.HAPStatus.SERVICE_COMMUNICATION_FAILURE
+      );
+    }
 
-        if (!response.ok) {
-          throw new this.platform.api.hap.HapStatusError(
-            this.platform.api.hap.HAPStatus.SERVICE_COMMUNICATION_FAILURE,
-          );
-        }
-
-        if (response.status === 401) {
-          throw new this.platform.api.hap.HapStatusError(
-            this.platform.api.hap.HAPStatus.INSUFFICIENT_AUTHORIZATION,
-          );
-        }
-
-        if (response.status !== 200) {
-          throw new this.platform.api.hap.HapStatusError(
-            this.platform.api.hap.HAPStatus.SERVICE_COMMUNICATION_FAILURE,
-          );
-        }
-
-        const status = (await response.json()) as { printer: StatusPrinter };
-
-        if (!status.printer.temp_nozzle || !status.printer.temp_bed) {
-          throw new this.platform.api.hap.HapStatusError(
-            this.platform.api.hap.HAPStatus.SERVICE_COMMUNICATION_FAILURE,
-          );
-        }
-
-        const active =
-          // inactive if attempting to reach a specific temp (preheating or actively printing)
-          !(status.printer.target_bed || status.printer.target_nozzle) &&
-          // inactive if "cooling down" (temps are way different than each other)
-          Math.abs(status.printer.temp_nozzle - status.printer.temp_bed) <
-            this.accessory.context.config.maxDelta;
-        this.tempService
-          .getCharacteristic(this.platform.Characteristic.StatusActive)
-          .setValue(active);
-        this.tempService
-          .getCharacteristic(this.platform.Characteristic.StatusTampered)
-          .setValue(
-            active
-              ? this.platform.Characteristic.StatusTampered.NOT_TAMPERED
-              : this.platform.Characteristic.StatusTampered.TAMPERED,
-          );
-        if (!active) {
-          throw new this.platform.api.hap.HapStatusError(
-            this.platform.api.hap.HAPStatus.RESOURCE_BUSY,
-          );
-        }
-
-        // use average temp as the actual value, it's kind of annoying to deal with two sensors
-        return (status.printer.temp_nozzle + status.printer.temp_bed) / 2;
-      });
+    return response;
   }
 }

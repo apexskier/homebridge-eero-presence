@@ -1,5 +1,5 @@
 ```
-yarn build && DEBUG=*prusalink* homebridge -D -I
+yarn build && DEBUG=*apexskier* homebridge -D -I
 ```
 
 - `-D`: debug mode

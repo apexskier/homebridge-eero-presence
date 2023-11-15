@@ -1,15 +1,15 @@
 {
-  "displayName": "PrusaLink",
-  "name": "@apexskier/homebridge-prusalink",
+  "displayName": "Eero Presence",
+  "name": "@apexskier/homebridge-eero-presence",
   "version": "1.0.1",
-  "description": "A short description about what your plugin does.",
+  "description": "Use your Eero mesh as an occupancy sensor",
   "license": "Apache-2.0",
   "repository": {
     "type": "git",
-    "url": "https://github.com/apexskier/homebridge-prusalink.git"
+    "url": "https://github.com/apexskier/homebridge-eero-presence.git"
   },
   "bugs": {
-    "url": "https://github.com/apexskier/homebridge-prusalink/issues"
+    "url": "https://github.com/apexskier/homebridge-eero-presence/issues"
   },
   "engines": {
     "node": "^18.17.0 || ^20.9.0",
@@ -21,15 +21,12 @@
     "fix": "prettier --write . && eslint src/**.ts --fix",
     "watch": "npm run build && npm link && nodemon",
     "build": "rimraf ./dist && tsc",
-    "prepublishOnly": "npm run lint && npm run build",
-    "generateApi": "openapi-generator-cli generate -i https://github.com/prusa3d/Prusa-Link-Web/blob/377e1509542100efe1689415d603d7a330d28d3c/spec/openapi.yaml -g typescript"
+    "prepare": "npm run lint && npm run build"
   },
   "keywords": [
     "homebridge-plugin"
   ],
   "devDependencies": {
-    "@types/node": "^18.16.20",
-    "@types/whatwg-fetch": "^0.0.33",
     "@typescript-eslint/eslint-plugin": "^5.62.0",
     "@typescript-eslint/parser": "^5.62.0",
     "eslint": "^8.45.0",

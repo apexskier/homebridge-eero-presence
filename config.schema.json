@@ -1,31 +1,28 @@
 {
-  "pluginAlias": "ApexskierHomebridgePrusaLink",
+  "pluginAlias": "ApexskierHomebridgeEeroPresense",
   "pluginType": "platform",
   "schema": {
     "type": "object",
     "properties": {
-      "ip": {
-        "title": "IP Address",
+      "userToken": {
+        "title": "User Token",
         "type": "string",
-        "format": "hostname",
+        "description": "Authorized user token.",
         "required": true
       },
-      "model": {
-        "title": "Model",
+      "network": {
+        "title": "Network Name",
         "type": "string",
-        "default": "Prusa MK4",
-        "required": true
+        "description": "Name of the network to monitor, only required if you have multiple associated with your account.",
+        "required": false
       },
-      "password": {
-        "title": "Password",
-        "type": "string",
-        "required": true
-      },
-      "maxDelta": {
-        "title": "Max Temperature Difference",
+      "pollTime": {
+        "title": "Poll Interval",
         "type": "number",
-        "default": 2,
-        "description": "Maximum temperature difference to consider active. Lower this if the sensor is active too soon after a print completes, and increase if the sensor is not active enough."
+        "description": "Time in milliseconds between polls for occupancy.",
+        "minimum": 1,
+        "default": 5000,
+        "required": true
       }
     }
   }

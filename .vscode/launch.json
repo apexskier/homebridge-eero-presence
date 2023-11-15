@@ -5,15 +5,13 @@
   "version": "0.2.0",
   "configurations": [
     {
+      "name": "Launch file",
       "type": "node",
       "request": "launch",
-      "name": "Launch Program",
+      "program": "${workspaceFolder}/index.js",
       "env": {
-        "DEBUG": "homebridge-prusalink"
-      },
-      "skipFiles": ["<node_internals>/**"],
-      "program": "/opt/homebrew/bin/homebridge",
-      "args": ["-D"]
+        "USER_TOKEN": ""
+      }
     }
   ]
 }
