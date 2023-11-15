@@ -127,10 +127,11 @@ export class EeroPresenceHomebridgePlatform implements DynamicPlatformPlugin {
           this.api.registerPlatformAccessories(PLUGIN_NAME, PLATFORM_NAME, [
             accessory,
           ]);
+          this.accessories.push(accessory);
         }
       });
 
-    this.log.info("starting polling");
+    this.log.debug("starting polling");
     this.poll(network.resources.devices);
   }
 
@@ -170,7 +171,7 @@ export class EeroPresenceHomebridgePlatform implements DynamicPlatformPlugin {
         this.api.hap.uuid.generate(serial_number),
       ),
     );
-    this.log.info(
+    this.log.debug(
       "connected devices:",
       connectedDevices
         .map(
