@@ -31,7 +31,7 @@ export class EeroPresenceHomebridgePlatform implements DynamicPlatformPlugin {
   constructor(
     public readonly log: Logger,
     public readonly config: PlatformConfig,
-    public readonly api: API
+    public readonly api: API,
   ) {
     this.log.debug("Finished initializing platform:", this.config);
 
@@ -100,14 +100,14 @@ export class EeroPresenceHomebridgePlatform implements DynamicPlatformPlugin {
         // see if an accessory with the same uuid has already been registered and restored from
         // the cached devices we stored in the `configureAccessory` method above
         const existingAccessory = this.accessories.find(
-          (accessory) => accessory.UUID === uuid
+          (accessory) => accessory.UUID === uuid,
         );
         if (existingAccessory) {
           // the accessory already exists
           this.log.info(
             "Restoring existing accessory from cache:",
             existingAccessory.displayName,
-            eero.serial
+            eero.serial,
           );
 
           new EeroPresensePlatformAccessory(this, existingAccessory);
@@ -117,7 +117,7 @@ export class EeroPresenceHomebridgePlatform implements DynamicPlatformPlugin {
           // create a new accessory
           const accessory = new this.api.platformAccessory(
             eero.location,
-            uuid
+            uuid,
           ) as PlatformAccessory<AccessoryContext>;
           accessory.context.eero = eero;
           accessory.context.config = config;
@@ -162,22 +162,22 @@ export class EeroPresenceHomebridgePlatform implements DynamicPlatformPlugin {
         (device) =>
           (device.device_type === "watch" || device.device_type === "phone") &&
           device.connection_type === "wireless" &&
-          device.connected
+          device.connected,
       )
       .filter(({ connectivity: { score } }) => score > 0.7);
     const connectedEeros = new Set(
       connectedDevices.map(({ source: { serial_number } }) =>
-        this.api.hap.uuid.generate(serial_number)
-      )
+        this.api.hap.uuid.generate(serial_number),
+      ),
     );
     this.log.info(
       "connected devices:",
       connectedDevices
         .map(
           ({ display_name, source: { location } }) =>
-            `${location}: ${display_name}`
+            `${location}: ${display_name}`,
         )
-        .join(", ")
+        .join(", "),
     );
     this.accessories.forEach((accessory) => {
       accessory
@@ -186,7 +186,7 @@ export class EeroPresenceHomebridgePlatform implements DynamicPlatformPlugin {
           this.Characteristic.OccupancyDetected,
           connectedEeros.has(accessory.UUID)
             ? this.Characteristic.OccupancyDetected.OCCUPANCY_DETECTED
-            : this.Characteristic.OccupancyDetected.OCCUPANCY_NOT_DETECTED
+            : this.Characteristic.OccupancyDetected.OCCUPANCY_NOT_DETECTED,
         );
     });
   }
@@ -203,19 +203,19 @@ export class EeroPresenceHomebridgePlatform implements DynamicPlatformPlugin {
 
     if (!response.ok) {
       throw new this.api.hap.HapStatusError(
-        this.api.hap.HAPStatus.SERVICE_COMMUNICATION_FAILURE
+        this.api.hap.HAPStatus.SERVICE_COMMUNICATION_FAILURE,
       );
     }
 
     if (response.status === 401) {
       throw new this.api.hap.HapStatusError(
-        this.api.hap.HAPStatus.INSUFFICIENT_AUTHORIZATION
+        this.api.hap.HAPStatus.INSUFFICIENT_AUTHORIZATION,
       );
     }
 
     if (response.status !== 200) {
       throw new this.api.hap.HapStatusError(
-        this.api.hap.HAPStatus.SERVICE_COMMUNICATION_FAILURE
+        this.api.hap.HAPStatus.SERVICE_COMMUNICATION_FAILURE,
       );
     }
 

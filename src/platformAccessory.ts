@@ -22,7 +22,7 @@ export class EeroPresensePlatformAccessory {
 
   constructor(
     private readonly platform: EeroPresenceHomebridgePlatform,
-    private readonly accessory: PlatformAccessory<AccessoryContext>
+    private readonly accessory: PlatformAccessory<AccessoryContext>,
   ) {
     // set accessory information
     const accessoryCharacteristics = this.accessory
@@ -30,11 +30,11 @@ export class EeroPresensePlatformAccessory {
       .setCharacteristic(this.platform.Characteristic.Manufacturer, "Eero")
       .setCharacteristic(
         this.platform.Characteristic.Model,
-        this.accessory.context.eero.model
+        this.accessory.context.eero.model,
       );
     accessoryCharacteristics.setCharacteristic(
       this.platform.Characteristic.SerialNumber,
-      this.accessory.context.eero.serial
+      this.accessory.context.eero.serial,
     );
 
     this.sensorService =
@@ -57,7 +57,7 @@ export class EeroPresensePlatformAccessory {
           data: { led_on },
         } = await (
           await this.fetch(
-            `https://api-user.e2ro.com/${this.accessory.context.eero.url}`
+            `https://api-user.e2ro.com/${this.accessory.context.eero.url}`,
           )
         ).json();
 
@@ -67,7 +67,7 @@ export class EeroPresensePlatformAccessory {
         this.platform.log.debug(
           "setting on",
           value,
-          this.accessory.displayName
+          this.accessory.displayName,
         );
         await this.fetch(
           `https://api-user.e2ro.com${this.accessory.context.eero.resources.led_action}`,
@@ -76,7 +76,7 @@ export class EeroPresensePlatformAccessory {
             body: JSON.stringify({
               led_on: value,
             }),
-          }
+          },
         );
       });
 
@@ -85,13 +85,13 @@ export class EeroPresensePlatformAccessory {
       .onGet(async () => {
         this.platform.log.debug(
           "getting brightness",
-          this.accessory.displayName
+          this.accessory.displayName,
         );
         const {
           data: { led_brightness },
         } = await (
           await this.fetch(
-            `https://api-user.e2ro.com/${this.accessory.context.eero.url}`
+            `https://api-user.e2ro.com/${this.accessory.context.eero.url}`,
           )
         ).json();
 
@@ -101,7 +101,7 @@ export class EeroPresensePlatformAccessory {
         this.platform.log.debug(
           "setting brightness",
           value,
-          this.accessory.displayName
+          this.accessory.displayName,
         );
         await this.fetch(
           `https://api-user.e2ro.com${this.accessory.context.eero.resources.led_action}`,
@@ -111,7 +111,7 @@ export class EeroPresensePlatformAccessory {
               led_on: !!value,
               led_brightness: value,
             }),
-          }
+          },
         );
       });
   }
@@ -128,19 +128,19 @@ export class EeroPresensePlatformAccessory {
 
     if (!response.ok) {
       throw new this.platform.api.hap.HapStatusError(
-        this.platform.api.hap.HAPStatus.SERVICE_COMMUNICATION_FAILURE
+        this.platform.api.hap.HAPStatus.SERVICE_COMMUNICATION_FAILURE,
       );
     }
 
     if (response.status === 401) {
       throw new this.platform.api.hap.HapStatusError(
-        this.platform.api.hap.HAPStatus.INSUFFICIENT_AUTHORIZATION
+        this.platform.api.hap.HAPStatus.INSUFFICIENT_AUTHORIZATION,
       );
     }
 
     if (response.status !== 200) {
       throw new this.platform.api.hap.HapStatusError(
-        this.platform.api.hap.HAPStatus.SERVICE_COMMUNICATION_FAILURE
+        this.platform.api.hap.HAPStatus.SERVICE_COMMUNICATION_FAILURE,
       );
     }
 
