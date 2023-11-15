@@ -115,7 +115,7 @@ export class EeroPresenceHomebridgePlatform implements DynamicPlatformPlugin {
 
           // create a new accessory
           const accessory = new this.api.platformAccessory(
-            eero.location,
+            [eero.location, eero.model].join(" "),
             uuid,
           ) as PlatformAccessory<AccessoryContext>;
           accessory.context.eero = eero;
@@ -160,7 +160,9 @@ export class EeroPresenceHomebridgePlatform implements DynamicPlatformPlugin {
     const connectedDevices = devices
       .filter(
         (device) =>
-          (device.device_type === "watch" || device.device_type === "phone") &&
+          (this.config.deviceTypes || ["phone", "watch"]).includes(
+            device.device_type,
+          ) &&
           device.connection_type === "wireless" &&
           device.connected,
       )

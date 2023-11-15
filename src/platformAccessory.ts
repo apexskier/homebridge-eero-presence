@@ -18,7 +18,7 @@ export interface AccessoryContext {
 
 export class EeroPresensePlatformAccessory {
   sensorService: Service;
-  lightService: Service;
+  statusLightService: Service;
 
   constructor(
     private readonly platform: EeroPresenceHomebridgePlatform,
@@ -41,25 +41,36 @@ export class EeroPresensePlatformAccessory {
       this.accessory.getService(this.platform.Service.OccupancySensor) ||
       this.accessory.addService(this.platform.Service.OccupancySensor);
 
-    this.lightService =
+    this.statusLightService =
       this.accessory.getService(this.platform.Service.Lightbulb) ||
       this.accessory.addService(this.platform.Service.Lightbulb);
 
-    this.lightService
+    // future feature: support the nightlight attribute of the eero response
+    // to allow control if the eero has a nightlight
+
+    this.statusLightService
       .getCharacteristic(this.platform.Characteristic.Name)
       .setValue("Status light");
 
-    this.lightService
+    this.statusLightService
       .getCharacteristic(this.platform.Characteristic.On)
       .onGet(async () => {
         this.platform.log.debug("getting on", this.accessory.displayName);
         const {
-          data: { led_on },
+          data: { led_on, heartbeat_ok },
         } = await (
           await this.fetch(
             `https://api-user.e2ro.com/${this.accessory.context.eero.url}`,
           )
         ).json();
+
+        this.statusLightService
+          .getCharacteristic(this.platform.Characteristic.StatusFault)
+          .setValue(
+            heartbeat_ok
+              ? this.platform.Characteristic.StatusFault.NO_FAULT
+              : this.platform.Characteristic.StatusFault.GENERAL_FAULT,
+          );
 
         return led_on;
       })
@@ -80,7 +91,7 @@ export class EeroPresensePlatformAccessory {
         );
       });
 
-    this.lightService
+    this.statusLightService
       .getCharacteristic(this.platform.Characteristic.Brightness)
       .onGet(async () => {
         this.platform.log.debug(
@@ -88,12 +99,20 @@ export class EeroPresensePlatformAccessory {
           this.accessory.displayName,
         );
         const {
-          data: { led_brightness },
+          data: { led_brightness, heartbeat_ok },
         } = await (
           await this.fetch(
             `https://api-user.e2ro.com/${this.accessory.context.eero.url}`,
           )
         ).json();
+
+        this.statusLightService
+          .getCharacteristic(this.platform.Characteristic.StatusFault)
+          .setValue(
+            heartbeat_ok
+              ? this.platform.Characteristic.StatusFault.NO_FAULT
+              : this.platform.Characteristic.StatusFault.GENERAL_FAULT,
+          );
 
         return led_brightness;
       })

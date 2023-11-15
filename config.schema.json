@@ -16,6 +16,27 @@
         "description": "Name of the network to monitor, only required if you have multiple associated with your account.",
         "required": false
       },
+      "deviceTypes": {
+        "title": "Device Types",
+        "type": "array",
+        "description": "Device types that if presence is detected on will trigger occupancy.",
+        "default": ["phone", "watch"],
+        "items": {
+          "title": "Device Type",
+          "type": "string",
+          "typeahead": {
+            "source": [
+              "audio",
+              "generic",
+              "laptop_computer",
+              "phone",
+              "tablet",
+              "vacuum",
+              "watch"
+            ]
+          }
+        }
+      },
       "minSignal": {
         "title": "Signal Strength",
         "type": "number",

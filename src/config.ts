@@ -3,4 +3,5 @@ export interface Config {
   pollTime?: number;
   network?: string;
   minSignal?: number;
+  deviceTypes?: string[];
 }
