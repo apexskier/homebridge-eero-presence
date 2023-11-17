@@ -136,14 +136,22 @@ export class EeroPresensePlatformAccessory {
   }
 
   async fetch(input: RequestInfo | URL, init?: RequestInit) {
-    const response = await fetch(input, {
-      ...init,
-      headers: {
-        ...init?.headers,
-        "content-type": "application/json",
-        cookie: `s=${this.accessory.context.config.userToken}`,
-      },
-    });
+    let response;
+    try {
+      response = await fetch(input, {
+        ...init,
+        headers: {
+          ...init?.headers,
+          "content-type": "application/json",
+          cookie: `s=${this.accessory.context.config.userToken}`,
+        },
+      });
+    } catch (error) {
+      this.platform.log.error("failed to fetch");
+      throw new this.platform.api.hap.HapStatusError(
+        this.platform.api.hap.HAPStatus.SERVICE_COMMUNICATION_FAILURE,
+      );
+    }
 
     if (!response.ok) {
       throw new this.platform.api.hap.HapStatusError(
