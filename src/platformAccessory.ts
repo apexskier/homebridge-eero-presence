@@ -57,21 +57,12 @@ export class EeroPresensePlatformAccessory {
       .onGet(async () => {
         this.platform.log.debug("getting on", this.accessory.displayName);
         const {
-          data: { led_on, heartbeat_ok },
+          data: { led_on },
         } = await (
           await this.fetch(
             `https://api-user.e2ro.com/${this.accessory.context.eero.url}`,
           )
         ).json();
-
-        this.statusLightService
-          .getCharacteristic(this.platform.Characteristic.StatusFault)
-          .setValue(
-            heartbeat_ok
-              ? this.platform.Characteristic.StatusFault.NO_FAULT
-              : this.platform.Characteristic.StatusFault.GENERAL_FAULT,
-          );
-
         return led_on;
       })
       .onSet(async (value) => {
@@ -99,21 +90,12 @@ export class EeroPresensePlatformAccessory {
           this.accessory.displayName,
         );
         const {
-          data: { led_brightness, heartbeat_ok },
+          data: { led_brightness },
         } = await (
           await this.fetch(
             `https://api-user.e2ro.com/${this.accessory.context.eero.url}`,
           )
         ).json();
-
-        this.statusLightService
-          .getCharacteristic(this.platform.Characteristic.StatusFault)
-          .setValue(
-            heartbeat_ok
-              ? this.platform.Characteristic.StatusFault.NO_FAULT
-              : this.platform.Characteristic.StatusFault.GENERAL_FAULT,
-          );
-
         return led_brightness;
       })
       .onSet(async (value) => {
