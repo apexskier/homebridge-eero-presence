@@ -27,7 +27,7 @@
     "fix": "prettier --write . && eslint src/**.ts --fix",
     "watch": "npm run build && npm link && nodemon",
     "build": "rimraf ./dist && tsc",
-    "prepublish": "npm run lint && npm run build",
+    "prepare": "npm run lint && npm run build",
     "auth": "node auth.js"
   },
   "keywords": [
