@@ -186,7 +186,7 @@ export class EeroPresenceHomebridgePlatform implements DynamicPlatformPlugin {
     this.accessories.forEach((accessory) => {
       accessory
         ?.getService(this.Service.OccupancySensor)
-        ?.setCharacteristic(
+        ?.updateCharacteristic(
           this.Characteristic.OccupancyDetected,
           connectedEeros.has(accessory.UUID)
             ? this.Characteristic.OccupancyDetected.OCCUPANCY_DETECTED
