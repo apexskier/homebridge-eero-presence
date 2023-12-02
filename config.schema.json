@@ -1,5 +1,5 @@
 {
-  "pluginAlias": "ApexskierHomebridgeEeroPresense",
+  "pluginAlias": "ApexskierHomebridgeEeroPresence",
   "pluginType": "platform",
   "schema": {
     "type": "object",

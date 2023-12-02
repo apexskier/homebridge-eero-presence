@@ -4,7 +4,7 @@
 
 </p>
 
-# Homebridge Eero Presense
+# Homebridge Eero Presence
 
 Use your Eero routers as occupancy sensors. There's inherent delay for your devices to swap routers, but for general monitoring this works pretty well.
 

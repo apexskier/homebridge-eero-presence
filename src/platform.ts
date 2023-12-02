@@ -11,7 +11,7 @@ import {
 import { PLATFORM_NAME, PLUGIN_NAME } from "./settings";
 import {
   AccessoryContext,
-  EeroPresensePlatformAccessory,
+  EeroPresencePlatformAccessory,
 } from "./platformAccessory";
 import { Config } from "./config";
 
@@ -109,7 +109,7 @@ export class EeroPresenceHomebridgePlatform implements DynamicPlatformPlugin {
             eero.serial,
           );
 
-          new EeroPresensePlatformAccessory(this, existingAccessory);
+          new EeroPresencePlatformAccessory(this, existingAccessory);
         } else {
           this.log.info("Adding new accessory", eero.location, eero.serial);
 
@@ -121,7 +121,7 @@ export class EeroPresenceHomebridgePlatform implements DynamicPlatformPlugin {
           accessory.context.eero = eero;
           accessory.context.config = config;
 
-          new EeroPresensePlatformAccessory(this, accessory);
+          new EeroPresencePlatformAccessory(this, accessory);
 
           this.api.registerPlatformAccessories(PLUGIN_NAME, PLATFORM_NAME, [
             accessory,

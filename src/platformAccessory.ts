@@ -16,7 +16,7 @@ export interface AccessoryContext {
   config: Config;
 }
 
-export class EeroPresensePlatformAccessory {
+export class EeroPresencePlatformAccessory {
   sensorService: Service;
   statusLightService: Service;
 
