@@ -54,6 +54,14 @@
         "default": 5000,
         "required": true
       },
+      "occupancyTimeout": {
+        "title": "Occupancy Timeout",
+        "type": "number",
+        "description": "Time in milliseconds to wait before setting unoccupied (approximately). See https://github.com/apexskier/homebridge-eero-presence/issues/2 for more info.",
+        "minimum": 1,
+        "default": 20000,
+        "required": true
+      },
       "enableStatusLightAccessories": {
         "title": "Enable Status Light Accessories",
         "type": "boolean",

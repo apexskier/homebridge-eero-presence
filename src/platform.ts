@@ -147,8 +147,10 @@ export class EeroPresenceHomebridgePlatform implements DynamicPlatformPlugin {
       });
   }
 
+  private lastOccupied = new Map<string, Date>();
+
   private async checkOccupancy(deviceEndpoint: string) {
-    const { data: devices } = await (
+    const { data: devices } = (await (
       await fetch(`https://api-user.e2ro.com${deviceEndpoint}`, {
         method: "GET",
         headers: {
@@ -156,7 +158,18 @@ export class EeroPresenceHomebridgePlatform implements DynamicPlatformPlugin {
           cookie: `s=${this.config.userToken}`,
         },
       })
-    ).json();
+    ).json()) as {
+      data: ReadonlyArray<{
+        connected: boolean;
+        connection_type: string;
+        connectivity: { score: number };
+        device_type: string;
+        display_name: string;
+        source: { serial_number: string; location: string };
+      }>;
+    };
+
+    const now = new Date();
 
     const connectedDevices = devices
       .filter(
@@ -170,11 +183,9 @@ export class EeroPresenceHomebridgePlatform implements DynamicPlatformPlugin {
       .filter(
         ({ connectivity: { score } }) => score > (this.config.minSignal || 0.7),
       );
-    const connectedEeros = new Set(
-      connectedDevices.map(({ source: { serial_number } }) =>
-        this.api.hap.uuid.generate(serial_number),
-      ),
-    );
+    connectedDevices.forEach(({ source: { serial_number } }) => {
+      this.lastOccupied.set(this.api.hap.uuid.generate(serial_number), now);
+    });
     this.log.debug(
       "connected devices:",
       connectedDevices
@@ -184,15 +195,36 @@ export class EeroPresenceHomebridgePlatform implements DynamicPlatformPlugin {
         )
         .join(", "),
     );
+
     this.accessories.forEach((accessory) => {
-      accessory
-        ?.getService(this.Service.OccupancySensor)
-        ?.updateCharacteristic(
+      const status =
+        now.getTime() -
+          (this.lastOccupied.get(accessory.UUID)?.getTime() ?? 0) <
+        (this.config.occupancyTimeout ?? 20000)
+          ? this.Characteristic.OccupancyDetected.OCCUPANCY_DETECTED
+          : this.Characteristic.OccupancyDetected.OCCUPANCY_NOT_DETECTED;
+      const occupancyService = accessory.getService(
+        this.Service.OccupancySensor,
+      );
+      if (occupancyService) {
+        const detected = occupancyService.getCharacteristic(
           this.Characteristic.OccupancyDetected,
-          connectedEeros.has(accessory.UUID)
-            ? this.Characteristic.OccupancyDetected.OCCUPANCY_DETECTED
-            : this.Characteristic.OccupancyDetected.OCCUPANCY_NOT_DETECTED,
-        );
+        ).value;
+        if (detected !== status) {
+          this.log.info(
+            `${accessory.displayName} now ${
+              status ===
+              this.Characteristic.OccupancyDetected.OCCUPANCY_DETECTED
+                ? "occupied"
+                : "unoccupied"
+            }`,
+          );
+          occupancyService?.updateCharacteristic(
+            this.Characteristic.OccupancyDetected,
+            status,
+          );
+        }
+      }
     });
   }
 

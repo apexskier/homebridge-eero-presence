@@ -124,7 +124,7 @@ export class EeroPresencePlatformAccessory {
   }
 
   async fetch(input: RequestInfo | URL, init?: RequestInit) {
-    let response;
+    let response: Response;
     try {
       response = await fetch(input, {
         ...init,
