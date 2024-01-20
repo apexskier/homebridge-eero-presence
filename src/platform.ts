@@ -29,7 +29,7 @@ export class EeroPresenceHomebridgePlatform implements DynamicPlatformPlugin {
 
   constructor(
     public readonly log: Logger,
-    public readonly config: PlatformConfig,
+    public readonly config: PlatformConfig & Partial<Config>,
     public readonly api: API,
   ) {
     this.log.debug("Finished initializing platform:", this.config);
@@ -108,6 +108,8 @@ export class EeroPresenceHomebridgePlatform implements DynamicPlatformPlugin {
             existingAccessory.displayName,
             eero.serial,
           );
+          existingAccessory.context.eero = eero;
+          this.api.updatePlatformAccessories([existingAccessory]);
 
           new EeroPresencePlatformAccessory(this, existingAccessory);
         } else {
@@ -119,7 +121,6 @@ export class EeroPresenceHomebridgePlatform implements DynamicPlatformPlugin {
             uuid,
           ) as PlatformAccessory<AccessoryContext>;
           accessory.context.eero = eero;
-          accessory.context.config = config;
 
           new EeroPresencePlatformAccessory(this, accessory);
 

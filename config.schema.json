@@ -53,6 +53,13 @@
         "minimum": 1,
         "default": 5000,
         "required": true
+      },
+      "enableStatusLightAccessories": {
+        "title": "Enable Status Light Accessories",
+        "type": "boolean",
+        "description": "Enable status light accessories for each device.",
+        "default": false,
+        "required": false
       }
     }
   }

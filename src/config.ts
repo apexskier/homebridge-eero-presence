@@ -4,4 +4,5 @@ export interface Config {
   network?: string;
   minSignal?: number;
   deviceTypes?: string[];
+  enableStatusLightAccessories?: boolean;
 }
