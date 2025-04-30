@@ -12,7 +12,7 @@ I use this to automatically open my blinds when we leave the bedroom and go to o
 
 ## Config
 
-To get a user token, run `npm run auth` and follow the prompts:
+To get a user token, run `npm run auth` and follow the prompts.
 
 ```
 ❯ npm run auth
@@ -24,3 +24,7 @@ login identifier (email or phone, amazon login not supported): hi@example.com
 verification code: 123123
 user token: 99999999|exampleexampleexampleexamp
 ```
+
+The easiest way to do this is through the homebridge UI's terminal. After installing the plugin, visit `http://{{yourhomebridgeurl}}/platform-tools/terminal` and run `node node_modules/@apexskier/homebridge-eero-presence/auth.js`
+
+![image001](https://github.com/user-attachments/assets/e3258cb1-2f8e-4b47-8113-b2f02269a9a3)
