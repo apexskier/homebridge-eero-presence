@@ -1,0 +1,7 @@
+name: Build and Lint
+
+on: [pull_request]
+
+jobs:
+  check:
+    uses: apexskier/homebridge-workflows/.github/workflows/check.yml@main
